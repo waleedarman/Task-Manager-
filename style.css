@@ -1,0 +1,101 @@
+html, body {
+  margin: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, #264d83 0, #0f172a 45%),
+    radial-gradient(1000px 500px at 120% 0%, #111827 0, #0f172a 50%),
+    #0f172a;
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+:root { --primary: #3b82f6; }
+
+.hero-title {
+  color: rgb(215,175,255);
+  font-size: 6rem;
+  text-align: center;
+  opacity: .4;
+}
+
+.poster {
+  height: 6px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#dbeafe,#bfdbfe,#93c5fd);
+  opacity: .85;
+  margin-bottom: 12px;
+}
+
+.input-group>.form-control {
+  border-radius: .375rem 0 0 .375rem;
+  padding: 8px 10px;
+  background-color: #111122;
+  color: #f1f1f1;
+  border: 1px solid #33334a;
+}
+
+.input-group>.btn {
+  border-radius: 0 .375rem .375rem 0;
+  padding: 8px 12px;
+}
+
+.btn-add {
+  background-color: #932fd1;
+  border-color: #932fd1;
+  color: #fff;
+}
+.btn-add:hover {
+  background-color: #5c108c;
+  border-color: #5c108c;
+}
+
+#taskList {
+  margin-top: .5rem;
+ }
+
+.card {
+  background-color: #1e1e2f;
+  color: #f1f1f1;
+}
+
+.card-body { padding: 16px; }
+
+#taskInput::placeholder {
+  color: #fff;
+  opacity: .8;
+}
+
+.list-group-item {
+  background-color: #2a2a3b;
+  border: 1px solid #3a3a4d;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  color: #f1f1f1;
+  transition: background-color .25s ease, transform .2s ease;
+}
+.list-group-item:hover {
+  background-color: #3a3a4d;
+  transform: translateX(4px);
+}
+.list-group-item.completed {
+  background-color: #33334a;
+}
+.list-group-item.completed .task-text {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.form-check-input:checked {
+  background-color: #5c108c;
+  border-color: #5c108c;
+}
+
+.task-text { font-weight: 500; }
+
+.btn-remove { color: #ef4444; }
+.btn-remove:hover { color: #dc2626; }
