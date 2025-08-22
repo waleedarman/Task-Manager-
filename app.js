@@ -1,98 +1,82 @@
-const LS_KEY = "taskly:v1";
-
 class Task {
   constructor(text, completed = false) {
-    this.text = text.trim();
+    this.text = text;
     this.completed = completed;
   }
 }
 
-let tasks = [];
+class TaskManager {
+  constructor(listElementId, formElementId, inputElementId) {
+    this.tasks = JSON.parse(localStorage.getItem("tasks"))?.map(
+      t => new Task(t.text, t.completed)
+    ) || [];
+    this.taskList = document.getElementById(listElementId);
+    this.taskForm = document.getElementById(formElementId);
+    this.taskInput = document.getElementById(inputElementId);
 
-const form = document.getElementById("taskForm");
-const input = document.getElementById("taskInput");
-const list  = document.getElementById("taskList");
+    this.taskForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.addTask(this.taskInput.value);
+      this.taskInput.value = "";
+      this.taskInput.focus();
+    });
 
-const load = () => {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    tasks = arr.map(t => new Task(t.text, !!t.completed));
-  } catch { tasks = []; }
-};
-const save = () => localStorage.setItem(LS_KEY, JSON.stringify(tasks));
-
-const addTask = (text) => {
-  const t = text.trim();
-  if (!t) return;
-  tasks.push(new Task(t));
-  save(); render();
-};
-const toggleTask = (i) => {
-  const t = tasks[i]; if (!t) return;
-  t.completed = !t.completed;
-  save(); render();
-};
-const removeTask = (i) => {
-  tasks.splice(i, 1);
-  save(); render();
-};
-
-const render = () => {
-  list.innerHTML = "";
-  const frag = document.createDocumentFragment();
-
-  tasks.forEach((task, i) => {
-    const li = document.createElement("li");
-    li.className = `list-group-item d-flex align-items-center justify-content-between ${task.completed ? "completed" : ""}`;
-    li.dataset.index = i;
-
-    const left = document.createElement("div");
-    left.className = "d-flex align-items-center gap-2";
-
-    const check = document.createElement("input");
-    check.type = "checkbox";
-    check.className = "form-check-input m-0";
-    check.checked = task.completed;
-
-    const txt = document.createElement("span");
-    txt.className = "task-text";
-    txt.textContent = task.text;
-
-    left.append(check, txt);
-
-    const del = document.createElement("button");
-    del.className = "btn btn-link btn-sm text-decoration-none btn-remove";
-    del.innerHTML = `<i class="bi bi-x-lg"></i>`;
-
-    li.append(left, del);
-    frag.appendChild(li);
-  });
-
-  list.appendChild(frag);
-};
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  addTask(input.value);
-  input.value = "";
-  input.focus();
-});
-
-list.addEventListener("click", (e) => {
-  const li = e.target.closest("li");
-  if (!li) return;
-  const i = Number(li.dataset.index);
-  if (e.target.closest(".btn-remove")) removeTask(i);
-});
-
-list.addEventListener("change", (e) => {
-  if (e.target.matches('input[type="checkbox"]')) {
-    const li = e.target.closest("li");
-    const i = Number(li.dataset.index);
-    toggleTask(i);
+    this.renderTasks();
   }
-});
 
-load();
-render();
+  saveTasks = () => {
+    localStorage.setItem("tasks", JSON.stringify(this.tasks));
+  }
+
+  renderTasks = () => {
+    this.taskList.innerHTML = "";
+    this.tasks.forEach((task, index) => {
+      const li = document.createElement("li");
+      li.className =
+        "list-group-item d-flex justify-content-between align-items-center shadow-sm mb-2";
+      if (task.completed) li.classList.add("completed");
+
+      li.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+          <input type="checkbox" class="form-check-input complete-checkbox" ${task.completed ? "checked" : ""}>
+          <span class="task-text">${task.text}</span>
+        </div>
+        <button class="btn btn-sm btn-link delete-btn text-danger" title="Delete">
+          <i class="bi bi-trash"></i>
+        </button>
+      `;
+
+      li.querySelector(".complete-checkbox").addEventListener("change", () => {
+        this.toggleTask(index);
+      });
+
+      li.querySelector(".delete-btn").addEventListener("click", () => {
+        this.deleteTask(index);
+      });
+
+      this.taskList.appendChild(li);
+    });
+  }
+
+  addTask = (text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    this.tasks.push(new Task(trimmed));
+    this.saveTasks();
+    this.renderTasks();
+  }
+
+  toggleTask = (index) => {
+    this.tasks[index].completed = !this.tasks[index].completed;
+    this.saveTasks();
+    this.renderTasks();
+  }
+
+  deleteTask = (index) => {
+    this.tasks.splice(index, 1);
+    this.saveTasks();
+    this.renderTasks();
+  }
+}
+
+const manager = new TaskManager("taskList", "taskForm", "taskInput");
